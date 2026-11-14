@@ -38,13 +38,13 @@ const PROFILES = RAAGS.map(profile);
 const list = idxs => idxs.map(i => SWARAS[i].label).join(', ');
 
 // outline: [{ semi, dur, meend?, osc? }] with immediate repeats collapsed.
-export function identify(outline) {
+export function identify(outline, { force = false } = {}) {
   const total = outline.reduce((a, n) => a + n.dur, 0);
   const hist = new Array(12).fill(0);
   for (const n of outline) hist[mod(n.semi, 12)] += n.dur / (total || 1);
   const played = hist.map((h, i) => h >= 0.025 ? i : -1).filter(i => i >= 0);
   const evidence = { notes: outline.length, distinct: played.length, seconds: total, hist };
-  if (outline.length < 8 || played.length < 4 || total < 4) {
+  if (!force && (outline.length < 8 || played.length < 4 || total < 4)) {
     const need = [];
     if (played.length < 4) need.push(`at least 4 different swaras (heard ${played.length})`);
     if (outline.length < 8) need.push(`a longer phrase (heard ${outline.length} of 8 notes)`);
@@ -110,7 +110,7 @@ export function identify(outline) {
     else if (regNote === false) against.push({ t: `This raag is normally developed in the ${r.reg === 'low' ? 'lower' : 'upper'} register.` });
     if (orn.length) why.push({ t: `Slow oscillation (andolan) detected on ${list(orn)}, typical of this raag.` });
     return { raag: r, score, parts: { set: setScore, direction: dirScore, phrase: phraseScore, emphasis }, why, against };
-  }).filter(x => x.score >= 0.5).sort((a, b) => b.score - a.score).slice(0, 5);
+  }).filter(x => force || x.score >= 0.5).sort((a, b) => b.score - a.score).slice(0, 5);
 
   for (const x of results) x.label = x.score >= 0.85 ? 'Strong resemblance' : x.score >= 0.7 ? 'Likely' : 'Possible';
   const contested = results.length > 1 && results[0].score - results[1].score < 0.05;

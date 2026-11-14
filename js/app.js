@@ -6,13 +6,13 @@ import { $, $$, icons, toast } from './dom.js';
 import { NOTE_NAMES } from './theory.js';
 
 export const NAV = [
-  { id: 'home', label: 'Home', icon: 'home' }, { id: 'live', label: 'Live Detector', short: 'Live', icon: 'live' },
+  { id: 'home', label: 'Home', icon: 'home' }, { id: 'finder', label: 'Scale Finder', short: 'Finder', icon: 'finder' }, { id: 'live', label: 'Live Detector', short: 'Live', icon: 'live' },
   { id: 'raag', label: 'Raag Studio', short: 'Raag', icon: 'raag' }, { id: 'tanpura', label: 'Tanpura', icon: 'tanpura' },
   { id: 'tuner', label: 'Bansuri Tuner', short: 'Tuner', icon: 'tuner' }, { id: 'practice', label: 'Practice', icon: 'practice' },
   { id: 'learn', label: 'Learning Centre', short: 'Learn', icon: 'learn' }, { id: 'settings', label: 'Settings', icon: 'settings' },
 ];
 const loaders = {
-  home: () => import('./views/home.js'), live: () => import('./views/live.js'), raag: () => import('./views/raag.js'),
+  home: () => import('./views/home.js'), finder: () => import('./views/finder.js'), live: () => import('./views/live.js'), raag: () => import('./views/raag.js'),
   tanpura: () => import('./views/tanpura.js'), tuner: () => import('./views/tuner.js'), practice: () => import('./views/practice.js'),
   learn: () => import('./views/learn.js'), settings: () => import('./views/settings.js'),
 };

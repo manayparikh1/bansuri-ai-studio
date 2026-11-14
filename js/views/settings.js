@@ -34,8 +34,8 @@ export function mount(el) {
 
       <h2 class="h2">Detection</h2>
       <div class="panel">
-        <div class="field"><div><b>Microphone sensitivity</b><small>Higher picks up quieter playing, and more room noise</small></div><div class="seg seg-s" id="gate"><button data-v="0.009">Low</button><button data-v="0.004">Normal</button><button data-v="0.0015">High</button></div></div>
-        <div class="field"><div><b>Pitch clarity required</b><small>Strict shows fewer but surer readings</small></div><div class="seg seg-s" id="conf"><button data-v="0.9">Strict</button><button data-v="0.82">Normal</button><button data-v="0.72">Lenient</button></div></div>
+        <div class="field"><div><b>Microphone sensitivity</b><small>Higher picks up quieter playing, and more room noise</small></div><div class="seg seg-s" id="gate"><button data-v="0.008">Low</button><button data-v="0.0025">Normal</button><button data-v="0.001">High</button></div></div>
+        <div class="field"><div><b>Pitch clarity required</b><small>Strict shows fewer but surer readings</small></div><div class="seg seg-s" id="conf"><button data-v="0.9">Strict</button><button data-v="0.78">Normal</button><button data-v="0.68">Lenient</button></div></div>
         <div class="slider"><label for="mn">Shortest note</label><input id="mn" type="range" min="60" max="250" step="10" value="${s.minNoteMs}"><output>${s.minNoteMs} ms</output></div>
         <div class="field"><div><b>Noise suppression</b><small>Phone voice processing. Leave off for music; it distorts sustained notes.</small></div>${sw('ns', s.micNS)}</div>
         <div class="field"><div><b>Echo cancellation</b><small>Can help when the tanpura plays through the speaker, at some cost to accuracy. Earphones are better.</small></div>${sw('ec', s.micEC)}</div>

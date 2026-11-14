@@ -1,10 +1,12 @@
 // Local persistence only: settings in localStorage, recordings in IndexedDB. Nothing leaves the device.
 const KEY = 'bansuri.settings.v1';
+const REV = 2; // bump to re-apply improved detection defaults once on existing installs
 export const DEFAULTS = {
   saPc: 4, saOct: 4, fine: 0, a4: 440,
   bansuriName: 'My bansuri',
   temperament: 'just', notation: 'indian', theme: 'charcoal',
-  minConf: 0.82, gate: 0.004, tol: 15, minNoteMs: 100,
+  minConf: 0.78, gate: 0.0025, tol: 15, minNoteMs: 100,
+  myFlutes: [], rev: REV,
   micNS: false, micEC: false,
   tunerMode: 'swara',
   tanpura: { first: 'P', tempo: 54, volume: 0.7, jivari: 0.6, register: 0, timbre: 'concert' },
@@ -12,7 +14,8 @@ export const DEFAULTS = {
   practiceGoal: 20,
 };
 let state;
-try { const raw = JSON.parse(localStorage.getItem(KEY) || '{}'); state = { ...DEFAULTS, ...raw, tanpura: { ...DEFAULTS.tanpura, ...(raw.tanpura || {}) } }; }
+try { const raw = JSON.parse(localStorage.getItem(KEY) || '{}'); state = { ...DEFAULTS, ...raw, tanpura: { ...DEFAULTS.tanpura, ...(raw.tanpura || {}) } };
+  if ((raw.rev || 1) < REV) state = { ...state, minConf: DEFAULTS.minConf, gate: DEFAULTS.gate, rev: REV }; }
 catch { state = structuredClone(DEFAULTS); }
 const subs = new Set();
 export const get = () => state;

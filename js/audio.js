@@ -2,6 +2,7 @@
 import { Yin, Tracker } from './pitch.js';
 import * as store from './store.js';
 import { swaraHz } from './theory.js';
+import { chromaFromSpectrum } from './finder.js';
 
 let ctx = null;
 export function getCtx() {
@@ -13,6 +14,8 @@ export function getCtx() {
 // ---- Microphone engine: one shared instance, many listeners ----
 export const mic = {
   active: false, stream: null, last: null,
+  chroma: new Float64Array(12), chromaSec: 0,   // spectrum chroma since the last reset (for songs with accompaniment)
+  chromaReset() { this.chroma.fill(0); this.chromaSec = 0; },
   _ls: new Set(), _st: new Set(),
   on(fn) { this._ls.add(fn); return () => this._ls.delete(fn); },
   onState(fn) { this._st.add(fn); return () => this._st.delete(fn); },
@@ -33,6 +36,11 @@ export const mic = {
     let n = 2048; while (n < this.yin.need) n *= 2;
     this.an.fftSize = n; this.an.smoothingTimeConstant = 0;
     this.src.connect(this.an);
+    // A second, long analyser gives the fine frequency resolution chroma needs.
+    this.an2 = c.createAnalyser(); this.an2.fftSize = 16384; this.an2.smoothingTimeConstant = 0;
+    this.src.connect(this.an2);
+    this.spec = new Float32Array(this.an2.frequencyBinCount); this.mags = new Float32Array(this.an2.frequencyBinCount);
+    this.cframe = new Float64Array(12); this._tick = 0;
     this.buf = new Float32Array(n);
     this.tracker = new Tracker();
     this.t0 = performance.now();
@@ -48,6 +56,13 @@ export const mic = {
       const voiced = r.freq > 0 && r.conf >= st.minConf;
       const tk = this.tracker.push(voiced ? r.freq : 0);
       const frame = { t: (now - this.t0) / 1000, freq: tk.freq, conf: r.conf, rms: r.rms, stab: tk.stab, std: tk.std };
+      if (++this._tick % 5 === 0 && r.rms > st.gate) {
+        this.an2.getFloatFrequencyData(this.spec);
+        for (let i = 0; i < this.spec.length; i++) this.mags[i] = 10 ** (this.spec[i] / 20);
+        this.cframe.fill(0);
+        const tot = chromaFromSpectrum(this.mags, c.sampleRate, this.an2.fftSize, st.a4, this.cframe);
+        if (tot > 0) { const w = Math.min(1, r.rms / 0.02); for (let i = 0; i < 12; i++) this.chroma[i] += this.cframe[i] / tot * w; this.chromaSec += 0.15; }
+      }
       this.last = frame;
       this._ls.forEach(f => f(frame));
     };
@@ -57,7 +72,7 @@ export const mic = {
   stop() {
     if (!this.active) return;
     this.active = false; clearInterval(this.timer);
-    try { this.src.disconnect(); } catch { /* already gone */ }
+    try { this.src.disconnect(); this.an2.disconnect(); } catch { /* already gone */ }
     this.stream.getTracks().forEach(t => t.stop());
     this.stream = null; this.last = null;
     try { this.wake?.release(); } catch { /* ignore */ }

@@ -1,10 +1,10 @@
 // Offline-first service worker: every file the app needs is stored on install, then served from the device.
-const VERSION = 'v1.0.1';
+const VERSION = 'v1.1.0';
 const CACHE = 'bansuri-studio-' + VERSION;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/dom.js', './js/store.js', './js/audio.js', './js/pitch.js', './js/theory.js', './js/analysis.js',
-  './js/raags.js', './js/raagid.js', './js/tanpura.js', './js/lessons.js',
+  './js/raags.js', './js/raagid.js', './js/tanpura.js', './js/lessons.js', './js/finder.js', './js/views/finder.js',
   './js/views/home.js', './js/views/live.js', './js/views/raag.js', './js/views/tanpura.js', './js/views/tuner.js',
   './js/views/practice.js', './js/views/learn.js', './js/views/settings.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png',

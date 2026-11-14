@@ -7,6 +7,7 @@ import { FIRST } from '../tanpura.js';
 import { NAV, offlineStatus, installPrompt } from '../app.js';
 
 const DESC = {
+  finder: 'Hear a voice or song, get the Sa, the flute and the raag',
   live: 'Notes, swaras and pitch in real time', raag: `Identify a raag · library of ${RAAGS.length}`, tanpura: 'A continuous drone in your Sa',
   tuner: 'Needle, calibration and intonation map', practice: 'Record, analyse and review takes', learn: 'Graded lessons and exercises', settings: 'Instrument, tuning and display',
 };
@@ -31,7 +32,7 @@ export function mount(el) {
         <div><span>Tanpura</span><b class="sm">${FIRST[s.tanpura.first].label} · Sa</b><small>${s.temperament === 'just' ? 'Just intonation' : 'Equal temperament'}</small></div>
       </a>
 
-      <a class="btn btn-primary cta" href="#/live"><span class="btn-ic">${icons.mic}</span><span>Begin listening</span></a>
+      <a class="btn btn-primary cta" href="#/finder"><span class="btn-ic">${icons.mic}</span><span>Find the scale</span></a>
 
       <nav class="sections">${NAV.filter(n => n.id !== 'home').map(n => `<a href="#/${n.id}"><span class="s-ic">${icons[n.icon]}</span><span class="s-t"><b>${n.label}</b><small>${DESC[n.id]}</small></span>${icons.chev}</a>`).join('')}</nav>
 

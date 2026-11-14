@@ -7,6 +7,8 @@ import { saHz, SWARAS, IDS, noteHTML, phraseHTML, phrasePlayable, swaraHz, mod }
 import { RAAGS, byId, sameSwaras, PRAHAR, praharNow } from '../raags.js';
 import { segment, outline } from '../analysis.js';
 import { identify } from '../raagid.js';
+import { analyse } from '../finder.js';
+import { NOTE_NAMES } from '../theory.js';
 
 const dots = r => `<span class="dots">${r.set.map((v, i) => `<i class="${v ? (r.core[i] ? 'on' : 'tch') : ''}"></i>`).join('')}</span>`;
 const phraseBtn = (str, s) => `<button class="ph" data-ph="${esc(str)}"><span class="ph-t">${phraseHTML(str, s)}</span><span class="ph-i">${icons.play}</span></button>`;
@@ -41,9 +43,10 @@ function studio(el, args) {
 
   // ---- Identify ----
   const fr = { t: [], f: [] };
-  let lastRun = 0, source = 'live';
+  let lastRun = 0, source = 'live', autoSa = true;
   pId.innerHTML = `
     <p class="lede">Play or sing a phrase: the aroha and avaroha, then the pakad. The app listens to which swaras you use, how you move between them, and where you rest.</p>
+    <div class="row-between" style="margin-top:0"><span class="hint" id="saLine" style="margin:0">Sa: detecting from what you play…</span><div class="seg seg-s" id="saMode"><button data-v="auto">Auto Sa</button><button data-v="mine">My Sa</button></div></div>
     <div class="evi"><div><b id="eN">0</b><span>notes</span></div><div><b id="eD">0</b><span>swaras</span></div><div><b id="eS">0</b><span>seconds</span></div></div>
     <div class="hist12" id="h12">${SWARAS.map((w, i) => `<div><div class="hb"><i></i></div><span>${noteHTML(i, s)}</span></div>`).join('')}</div>
     <div class="recent" id="seq"><span class="muted">The melodic outline appears here as you play.</span></div>
@@ -53,12 +56,20 @@ function studio(el, args) {
     <p class="hint">Identification is rule-based and runs entirely on this device. It compares your playing with ${RAAGS.length} raags using swaras, aroha and avaroha movement, characteristic phrases, emphasis and detectable ornaments. It suggests resemblances and explains them; it cannot be certain, and closely related raags often need a longer, more characteristic passage to separate.</p>`;
   const offBtn = micButton($('#micBtn', pId));
   const E = id => $('#' + id, pId);
+  seg(E('saMode'), 'auto', v => { autoSa = v === 'auto'; run(); });
 
   function run() {
-    const sa = saHz(s);
-    const { notes } = segment(fr, sa, { minNoteMs: s.minNoteMs, temperament: s.temperament });
-    const ol = outline(notes);
-    const out = identify(ol);
+    let ol, out, auto = null;
+    if (autoSa) {
+      // No Sa assumed: the tonic is worked out from the melody itself.
+      const r = analyse(fr, { a4: s.a4, minNoteMs: s.minNoteMs });
+      if (r.enough && r.raag) { auto = r; ol = r.outline; out = r.raag; }
+    }
+    if (!auto) {
+      const { notes } = segment(fr, saHz(s), { minNoteMs: s.minNoteMs, temperament: s.temperament });
+      ol = outline(notes); out = identify(ol);
+    }
+    E('saLine').innerHTML = autoSa ? (auto ? `Sa detected: <b>${NOTE_NAMES[auto.tonicPc]}</b> · ${Math.round(auto.confidence * 100)}% sure` : 'Sa: detecting from what you play…') : `Sa fixed at <b>${NOTE_NAMES[s.saPc]}</b> (your setting)`;
     E('eN').textContent = out.evidence.notes; E('eD').textContent = out.evidence.distinct; E('eS').textContent = out.evidence.seconds.toFixed(0);
     const mx = Math.max(0.01, ...out.evidence.hist);
     $$('#h12 .hb i', pId).forEach((b, i) => { b.style.height = out.evidence.hist[i] / mx * 100 + '%'; });

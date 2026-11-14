@@ -20,6 +20,7 @@ export function fitCanvas(cv) {
 const I = (d, extra = '') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.split('|').map(p => `<path d="${p}"/>`).join('')}${extra}</svg>`;
 export const icons = {
   home: I('M4 11.5 12 5l8 6.5|M6 10.5V19h12v-8.5|M10 19v-4.5a2 2 0 0 1 4 0V19'),
+  finder: I('M12 3.500v3|M12 17.500v3|M3.500 12h3|M17.500 12h3', '<circle cx="12" cy="12" r="5.500"/><circle cx="12" cy="12" r="1.600" fill="currentColor" stroke="none"/>'),
   live: I('M2.5 12h2.2l2-6 3.1 12 3-9 2 5 1.6-2h5.1'),
   raag: I('M12 4.5c2.8 2.8 2.8 6.7 0 9.5-2.8-2.8-2.8-6.7 0-9.5Z|M4 9.5c3.9 0 6.9 1.8 8 5.5-3.9 0-6.9-1.8-8-5.5Z|M20 9.5c-3.9 0-6.9 1.8-8 5.5 3.9 0 6.9-1.8 8-5.5Z|M5.5 19h13'),
   tanpura: I('M12 3v9.5|M9.5 3h5|M10 6h4', '<circle cx="12" cy="17" r="4.5"/>'),

@@ -1,6 +1,7 @@
 # Bansuri AI Studio
 
 An installable, offline-first companion for the bansuri and Indian classical music:
+a Scale Finder that hears a voice or song and reports the Sa, the bansuri to pick up and the raag,
 live swara detection, raag identification, a 72-raag encyclopedia, a bansuri tuner,
 a synthesised tanpura, practice recording with analysis, and a graded learning centre.
 
@@ -31,8 +32,16 @@ The only things that need internet are that first visit and picking up a newer v
 node tools/test.mjs
 ```
 
-Checks pitch-detection accuracy on synthetic tones, note segmentation, intonation reporting,
-Sa estimation, raag identification on ten raags, and the structure of the raag database.
+```bash
+node tools/test-finder.mjs
+node tools/bench-finder.mjs
+```
+
+The first two check pitch-detection accuracy on synthetic tones, note segmentation, intonation reporting,
+Sa estimation, raag identification on ten raags, and the structure of the raag database. The finder tests and benchmark sing synthetic,
+voice-like phrases of all 72 raags in assorted keys and tunings and check that the Sa and raag are recovered.
+These are generated from the same raag data the identifier uses, so they measure consistency, not
+real-world accuracy on recordings.
 
 ## Layout
 
@@ -40,6 +49,7 @@ Sa estimation, raag identification on ten raags, and the structure of the raag d
 | --- | --- |
 | `js/pitch.js` | YIN pitch detector with multi-period refinement, and frame smoothing |
 | `js/analysis.js` | Note segmentation, intonation statistics, meend / vibrato detection, Sa estimation |
+| `js/finder.js` | Scale Finder: Sa, tuning offset, thaat and raag from a melody with no preset Sa |
 | `js/raags.js` | The raag database. Add an entry and the whole app picks it up |
 | `js/raagid.js` | Rule-based raag identification with explanations |
 | `js/tanpura.js` | Additive tanpura synthesis with a jivari formant sweep |
